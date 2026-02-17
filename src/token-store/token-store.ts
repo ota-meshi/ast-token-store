@@ -201,6 +201,7 @@ export class TokenStore<
      */
     tokenStartToIndex: Map<number, number>;
     ctx: TokenContext<Token, Comment>;
+    cacheAllComments: Comment[] | null;
   };
 
   public constructor(params: {
@@ -229,6 +230,7 @@ export class TokenStore<
       allTokens,
       tokenStartToIndex,
       ctx,
+      cacheAllComments: null,
     };
   }
 
@@ -237,6 +239,24 @@ export class TokenStore<
    */
   public getAllTokens(): (Token | Comment)[] {
     return this[PRIVATE].allTokens;
+  }
+
+  /**
+   * Gets all comments.
+   */
+  public getAllComments(): Comment[] {
+    const { ctx, allTokens, cacheAllComments } = this[PRIVATE];
+    if (cacheAllComments) {
+      return cacheAllComments;
+    }
+    const result: Comment[] = [];
+    for (const token of allTokens) {
+      if (ctx.isComment(token)) {
+        result.push(token);
+      }
+    }
+    this[PRIVATE].cacheAllComments = result;
+    return result;
   }
 
   /**

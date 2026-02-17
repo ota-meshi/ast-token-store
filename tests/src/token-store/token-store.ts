@@ -32,6 +32,45 @@ describe("TokenStore", () => {
     });
   });
 
+  describe("getAllComments", () => {
+    it("should return all comment tokens", () => {
+      const ast = parse(
+        `key1 = "value1" # comment1\nkey2 = "value2" # comment2`,
+      );
+      const store = new TOMLTokenStore({ ast });
+
+      const comments = store.getAllComments();
+
+      assert.ok(comments.length === 2);
+      assert.strictEqual(comments[0].type, "Block");
+      assert.strictEqual(comments[1].type, "Block");
+      for (let i = 0; i < comments.length; i++) {
+        assert.ok(comments[i].range[0] <= comments[i].range[1]);
+      }
+    });
+
+    it("should return empty array when there are no comments", () => {
+      const ast = parse(`key = "value"`);
+      const store = new TOMLTokenStore({ ast });
+
+      const comments = store.getAllComments();
+
+      assert.deepStrictEqual(comments, []);
+    });
+
+    it("should preserve comment order", () => {
+      const ast = parse(`# first\nkey = "value" # second\n# third`);
+      const store = new TOMLTokenStore({ ast });
+
+      const comments = store.getAllComments();
+
+      assert.ok(comments.length >= 2);
+      for (let i = 1; i < comments.length; i++) {
+        assert.ok(comments[i - 1].range[0] <= comments[i].range[0]);
+      }
+    });
+  });
+
   describe("getFirstToken", () => {
     it("should return the first token of a node", () => {
       const ast = parse(`key = "value"`);
