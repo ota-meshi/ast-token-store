@@ -5,8 +5,8 @@
   "type": "module",
   "exports": {
     ".": {
-      "import": "./lib/index.js",
-      "default": "./lib/index.js"
+      "import": "./lib/index.mjs",
+      "default": "./lib/index.mjs"
     },
     "./package.json": "./package.json"
   },
