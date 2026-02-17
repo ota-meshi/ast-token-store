@@ -1,0 +1,26 @@
+name: Publish to pkg.pr.new
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+    tags: ["!**"]
+
+# Allow one concurrent deployment
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    if: github.repository == 'ota-meshi/ast-token-store'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+      - name: Install Packages
+        run: npm install
+      - name: Build
+        run: npm run build
+      - run: npx pkg-pr-new publish --compact '.' --json output.json
