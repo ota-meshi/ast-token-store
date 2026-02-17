@@ -832,6 +832,44 @@ key2 = "value2"`);
     });
   });
 
+  describe("getCommentsInside", () => {
+    it("should return comments inside a node", () => {
+      const ast = parse(`arr = [1, # comment\n2]`);
+      const store = new TOMLTokenStore({ ast });
+      const keyValue = ast.body[0].body[0];
+      assert.strictEqual(keyValue.type, "TOMLKeyValue");
+      const arr = keyValue.value;
+
+      const comments = store.getCommentsInside(arr);
+
+      assert.strictEqual(comments.length, 1);
+      assert.strictEqual(comments[0].value, " comment");
+    });
+
+    it("should return empty array when no comments inside", () => {
+      const ast = parse(`arr = [1, 2]`);
+      const store = new TOMLTokenStore({ ast });
+      const keyValue = ast.body[0].body[0];
+      assert.strictEqual(keyValue.type, "TOMLKeyValue");
+      const arr = keyValue.value;
+
+      const comments = store.getCommentsInside(arr);
+
+      assert.strictEqual(comments.length, 0);
+    });
+
+    it("should not include comments before the node", () => {
+      const ast = parse(`# comment\nkey = "value"`);
+      const store = new TOMLTokenStore({ ast });
+      const keyValue = ast.body[0].body[0];
+      assert.strictEqual(keyValue.type, "TOMLKeyValue");
+
+      const comments = store.getCommentsInside(keyValue);
+
+      assert.strictEqual(comments.length, 0);
+    });
+  });
+
   describe("commentsExistBetween", () => {
     it("should return true when comment exists between nodes", () => {
       const ast = parse(`arr = [1, # comment\n2]`);

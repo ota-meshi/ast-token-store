@@ -86,6 +86,7 @@ All methods accept options for filtering, skipping, counting, and including comm
 
 | Method                              | Description                                                  |
 | ----------------------------------- | ------------------------------------------------------------ |
+| `getCommentsInside(nodeOrToken)`    | Gets all comment tokens inside the given node/token          |
 | `getCommentsBefore(nodeOrToken)`    | Gets all comment tokens directly before the given node/token |
 | `getCommentsAfter(nodeOrToken)`     | Gets all comment tokens directly after the given node/token  |
 | `commentsExistBetween(left, right)` | Checks if any comments exist between two nodes               |
