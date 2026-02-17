@@ -1,6 +1,6 @@
 {
   "name": "@ota-meshi/ast-token-store",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A class library that provides an API similar to ESLint's token store",
   "type": "module",
   "exports": {
