@@ -902,6 +902,122 @@ key2 = "value2"`);
     });
   });
 
+  describe("isSpaceBetween", () => {
+    it("should return true when there is whitespace between tokens", () => {
+      const ast = parse(`key = "value"`);
+      const store = new TOMLTokenStore({ ast });
+      const keyValue = ast.body[0].body[0];
+      assert.strictEqual(keyValue.type, "TOMLKeyValue");
+
+      const keyToken = store.getFirstToken(keyValue);
+      const eqToken = keyToken ? store.getTokenAfter(keyToken) : null;
+
+      assert.ok(keyToken);
+      assert.ok(eqToken);
+      assert.strictEqual(store.isSpaceBetween(keyToken, eqToken), true);
+    });
+
+    it("should return false when there is no whitespace between tokens", () => {
+      const ast = parse(`key="value"`);
+      const store = new TOMLTokenStore({ ast });
+      const keyValue = ast.body[0].body[0];
+      assert.strictEqual(keyValue.type, "TOMLKeyValue");
+
+      const keyToken = store.getFirstToken(keyValue);
+      const eqToken = keyToken ? store.getTokenAfter(keyToken) : null;
+
+      assert.ok(keyToken);
+      assert.ok(eqToken);
+      assert.strictEqual(store.isSpaceBetween(keyToken, eqToken), false);
+    });
+
+    it("should return true when a comment exists between tokens", () => {
+      const ast = parse(`key = "value" # comment\nnext = 1`);
+      const store = new TOMLTokenStore({ ast });
+      const keyValue1 = ast.body[0].body[0];
+      const keyValue2 = ast.body[0].body[1];
+      assert.strictEqual(keyValue1.type, "TOMLKeyValue");
+      assert.strictEqual(keyValue2.type, "TOMLKeyValue");
+
+      const leftToken = store.getLastToken(keyValue1);
+      const rightToken = store.getFirstToken(keyValue2);
+
+      assert.ok(leftToken);
+      assert.ok(rightToken);
+      assert.strictEqual(store.isSpaceBetween(leftToken, rightToken), true);
+    });
+
+    it("should return true when only newlines exist between tokens", () => {
+      const ast = parse(`arr = [\n1]`);
+      const store = new TOMLTokenStore({ ast });
+      const keyValue = ast.body[0].body[0];
+      assert.strictEqual(keyValue.type, "TOMLKeyValue");
+      const arr = keyValue.value;
+
+      const leftToken = store.getFirstToken(arr);
+      const rightToken = leftToken ? store.getTokenAfter(leftToken) : null;
+
+      assert.ok(leftToken);
+      assert.ok(rightToken);
+      assert.strictEqual(store.isSpaceBetween(leftToken, rightToken), true);
+    });
+
+    it("should return false when nodes/tokens overlap", () => {
+      const ast = parse(`key = "value"`);
+      const store = new TOMLTokenStore({ ast });
+      const keyValue = ast.body[0].body[0];
+      assert.strictEqual(keyValue.type, "TOMLKeyValue");
+
+      assert.strictEqual(store.isSpaceBetween(keyValue, keyValue), false);
+    });
+
+    it("should return false when left end equals right start", () => {
+      const ast = parse(`a=1`);
+      const store = new TOMLTokenStore({ ast });
+      const keyValue = ast.body[0].body[0];
+      assert.strictEqual(keyValue.type, "TOMLKeyValue");
+      const key = keyValue.key;
+      const value = keyValue.value;
+
+      assert.strictEqual(store.isSpaceBetween(key, value), false);
+    });
+
+    it("should work with nodes instead of tokens", () => {
+      const ast = parse(`arr = [1, 2]`);
+      const store = new TOMLTokenStore({ ast });
+      const keyValue = ast.body[0].body[0];
+      assert.strictEqual(keyValue.type, "TOMLKeyValue");
+      const arr = keyValue.value;
+      assert.strictEqual(arr.type, "TOMLArray");
+
+      const firstElement = arr.elements[0];
+      const secondElement = arr.elements[1];
+
+      // With nodes, the comma is between them but since there's no space around comma,
+      // isSpaceBetween checks gaps which exist (before comma is "1", after is ",")
+      assert.strictEqual(
+        store.isSpaceBetween(firstElement, secondElement),
+        true,
+      );
+    });
+
+    it("should return true with spaces in array", () => {
+      const ast = parse(`arr = [ 1 , 2 ]`);
+      const store = new TOMLTokenStore({ ast });
+      const keyValue = ast.body[0].body[0];
+      assert.strictEqual(keyValue.type, "TOMLKeyValue");
+      const arr = keyValue.value;
+      assert.strictEqual(arr.type, "TOMLArray");
+
+      const firstElement = arr.elements[0];
+      const commaToken = store.getTokenAfter(firstElement);
+
+      assert.ok(firstElement);
+      assert.ok(commaToken);
+      assert.strictEqual(store.isSpaceBetween(firstElement, commaToken), true);
+    });
+  });
+
   describe("options as number", () => {
     it("should treat number option as skip for getFirstToken", () => {
       const ast = parse(`key = "value"`);
@@ -1074,6 +1190,206 @@ key = "value"`);
           .map((token) => token.value),
         ["b"],
       );
+    });
+  });
+
+  describe("edge cases and complex scenarios", () => {
+    it("should handle multiple consecutive spaces and comments", () => {
+      const ast = parse(`key1 = "value1"
+# comment1
+# comment2
+key2 = "value2"`);
+      const store = new TOMLTokenStore({ ast });
+      const keyValue2 = ast.body[0].body[1];
+
+      const comments = store.getCommentsBefore(keyValue2);
+      assert.strictEqual(comments.length, 2);
+    });
+
+    it("should handle token skipping with filter", () => {
+      const ast = parse(`key = "value"`);
+      const store = new TOMLTokenStore({ ast });
+      const keyValue = ast.body[0].body[0];
+
+      const tokens = store.getFirstTokens(keyValue, {
+        filter: (t) => t.type !== "Punctuator",
+        count: 2,
+      });
+
+      assert.strictEqual(tokens.length, 2);
+      assert.ok(tokens.every((t) => (t.type as string) !== "Punctuator"));
+    });
+
+    it("should return correct token count with filter", () => {
+      const ast = parse(`arr = [1, 2, 3, 4, 5]`);
+      const store = new TOMLTokenStore({ ast });
+      const keyValue = ast.body[0].body[0];
+      assert.strictEqual(keyValue.type, "TOMLKeyValue");
+      const arr = keyValue.value;
+      assert.strictEqual(arr.type, "TOMLArray");
+
+      const numbers = store.getTokens(arr, {
+        filter: (t) => /\d/.test(t.value),
+      });
+
+      assert.strictEqual(numbers.length, 5);
+    });
+
+    it("should handle getLastToken with skip", () => {
+      const ast = parse(`key = "value"`);
+      const store = new TOMLTokenStore({ ast });
+      const keyValue = ast.body[0].body[0];
+
+      const lastToken = store.getLastToken(keyValue);
+      const secondLastToken = store.getLastToken(keyValue, { skip: 1 });
+
+      assert.ok(lastToken);
+      assert.ok(secondLastToken);
+      assert.notStrictEqual(lastToken.value, secondLastToken.value);
+    });
+
+    it("should handle getTokensBefore with count", () => {
+      const ast = parse(`key = "value"`);
+      const store = new TOMLTokenStore({ ast });
+      const keyValue = ast.body[0].body[0];
+      assert.strictEqual(keyValue.type, "TOMLKeyValue");
+      const value = keyValue.value;
+
+      const tokens = store.getTokensBefore(value, { count: 3 });
+
+      assert.ok(tokens.length <= 3);
+      assert.strictEqual(tokens[tokens.length - 1].value, "=");
+    });
+
+    it("should handle getTokensAfter with count", () => {
+      const ast = parse(`key1 = "value1"
+key2 = "value2"
+key3 = "value3"`);
+      const store = new TOMLTokenStore({ ast });
+      const keyValue1 = ast.body[0].body[0];
+
+      const tokens = store.getTokensAfter(keyValue1, { count: 3 });
+
+      assert.ok(tokens.length > 0);
+      assert.ok(tokens.length <= 3);
+    });
+
+    it("should correctly identify space between elements in array", () => {
+      const ast = parse(`arr = [ 1 , 2 , 3 ]`);
+      const store = new TOMLTokenStore({ ast });
+      const keyValue = ast.body[0].body[0];
+      assert.strictEqual(keyValue.type, "TOMLKeyValue");
+      const arr = keyValue.value;
+
+      const firstToken = store.getFirstToken(arr);
+      const secondToken = store.getTokenAfter(firstToken);
+
+      assert.ok(firstToken);
+      assert.ok(secondToken);
+      assert.strictEqual(store.isSpaceBetween(firstToken, secondToken), true);
+    });
+
+    it("should handle deeply nested structures", () => {
+      const ast = parse(`nested = { inner = [1, 2, 3] }`);
+      const store = new TOMLTokenStore({ ast });
+      const keyValue = ast.body[0].body[0];
+      assert.strictEqual(keyValue.type, "TOMLKeyValue");
+      const inlineTable = keyValue.value;
+
+      const tokens = store.getTokens(inlineTable);
+      assert.ok(tokens.length > 0);
+      assert.ok(tokens.some((t) => t.value === "["));
+      assert.ok(tokens.some((t) => t.value === "]"));
+    });
+
+    it("should handle commentsExistBetween with spaces but no comments", () => {
+      const ast = parse(`arr = [ 1 , 2 ]`);
+      const store = new TOMLTokenStore({ ast });
+      const keyValue = ast.body[0].body[0];
+      assert.strictEqual(keyValue.type, "TOMLKeyValue");
+      const arr = keyValue.value;
+      assert.strictEqual(arr.type, "TOMLArray");
+
+      const exists = store.commentsExistBetween(
+        arr.elements[0],
+        arr.elements[1],
+      );
+
+      assert.strictEqual(exists, false);
+    });
+
+    it("should handle getCommentsInside with nested structures", () => {
+      const ast = parse(`arr = [
+  # comment inside
+  1
+]`);
+      const store = new TOMLTokenStore({ ast });
+      const keyValue = ast.body[0].body[0];
+      assert.strictEqual(keyValue.type, "TOMLKeyValue");
+      const arr = keyValue.value;
+
+      const comments = store.getCommentsInside(arr);
+
+      assert.strictEqual(comments.length, 1);
+      assert.ok(comments[0].value.includes("comment inside"));
+    });
+
+    it("should handle getFirstTokens with filter and count", () => {
+      const ast = parse(`arr = [1, 2, 3]`);
+      const store = new TOMLTokenStore({ ast });
+      const keyValue = ast.body[0].body[0];
+      assert.strictEqual(keyValue.type, "TOMLKeyValue");
+      const arr = keyValue.value;
+
+      const intTokens = store.getFirstTokens(arr, {
+        filter: (t) => /\d/.test(t.value),
+        count: 2,
+      });
+
+      assert.strictEqual(intTokens.length, 2);
+    });
+
+    it("should handle getLastTokens in reverse order", () => {
+      const ast = parse(`key = "value"`);
+      const store = new TOMLTokenStore({ ast });
+      const keyValue = ast.body[0].body[0];
+
+      const lastTokens = store.getLastTokens(keyValue, { count: 2 });
+
+      assert.strictEqual(lastTokens.length, 2);
+      assert.strictEqual(lastTokens[0].value, "=");
+      assert.strictEqual(lastTokens[1].type, "BasicString");
+    });
+
+    it("should handle getTokenBefore on first token", () => {
+      const ast = parse(`key = "value"`);
+      const store = new TOMLTokenStore({ ast });
+      const keyValue = ast.body[0].body[0];
+      const firstToken = store.getFirstToken(keyValue);
+
+      const token = store.getTokenBefore(firstToken);
+
+      assert.strictEqual(token, null);
+    });
+
+    it("should handle filtering with type guard", () => {
+      const ast = parse(`arr = [
+        # comment
+        1,
+        2
+      ]`);
+      const store = new TOMLTokenStore({ ast });
+      const keyValue = ast.body[0].body[0];
+      assert.strictEqual(keyValue.type, "TOMLKeyValue");
+      const arr = keyValue.value;
+
+      const tokens = store.getTokens(arr, {
+        includeComments: true,
+        filter: (t): t is AST.Token =>
+          t.type !== "Block" && t.type === "Integer",
+      });
+
+      assert.strictEqual(tokens.length, 2);
     });
   });
 });

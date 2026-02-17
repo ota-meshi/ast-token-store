@@ -91,6 +91,12 @@ All methods accept options for filtering, skipping, counting, and including comm
 | `getCommentsAfter(nodeOrToken)`     | Gets all comment tokens directly after the given node/token  |
 | `commentsExistBetween(left, right)` | Checks if any comments exist between two nodes               |
 
+#### Spacing Methods
+
+| Method                        | Description                                                     |
+| ----------------------------- | --------------------------------------------------------------- |
+| `isSpaceBetween(left, right)` | Checks if there is whitespace between two non-overlapping nodes |
+
 ### Options
 
 Single token methods (`getFirstToken`, `getLastToken`, etc.) accept skip options:
