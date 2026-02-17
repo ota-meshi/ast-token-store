@@ -1035,6 +1035,32 @@ export class TokenStore<
   }
 
   /**
+   * Gets all comment tokens inside the given node or token.
+   */
+  public getCommentsInside(nodeOrToken: Node | Token | Comment): Comment[] {
+    const { ctx, allTokens, tokenStartToIndex } = this[PRIVATE];
+    const startIndex = getFirstIndex(
+      allTokens,
+      tokenStartToIndex,
+      nodeOrToken.range[0],
+    );
+    const endIndex = getLastIndex(
+      allTokens,
+      tokenStartToIndex,
+      nodeOrToken.range[1],
+    );
+
+    const result: Comment[] = [];
+    for (let i = startIndex; i <= endIndex && i < allTokens.length; i++) {
+      const token = allTokens[i];
+      if (ctx.isComment(token)) {
+        result.push(token);
+      }
+    }
+    return result;
+  }
+
+  /**
    * Gets all comment tokens directly before the given node or token.
    */
   public getCommentsBefore(nodeOrToken: Node | Token | Comment): Comment[] {
