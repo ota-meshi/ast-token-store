@@ -22,7 +22,7 @@
     "lint": "npm run lint:js && npm run lint:ts",
     "lint:js": "eslint .",
     "lint:ts": "npm run tsc",
-    "tsc": "tsc --project tsconfig.build.json",
+    "tsc": "tsc",
     "eslint-fix": "eslint . --fix",
     "test": "npm run mocha -- \"tests/src/**/*.ts\" --reporter=dot --timeout=60000",
     "test:debug": "node --experimental-strip-types --experimental-transform-types ./node_modules/mocha/bin/mocha.js \"tests/src/**/*.ts\" --reporter=dot --timeout=60000",
