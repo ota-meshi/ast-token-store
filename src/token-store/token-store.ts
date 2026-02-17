@@ -249,7 +249,7 @@ export class TokenStore<
    */
   public getFirstToken(
     node: Node | Token | Comment,
-    options: CursorWithSkipOptionsWithoutFilter,
+    options?: CursorWithSkipOptionsWithoutFilter,
   ): Token | null;
 
   /**
@@ -363,7 +363,7 @@ export class TokenStore<
    */
   public getLastToken(
     node: Node | Token | Comment,
-    options: CursorWithSkipOptionsWithoutFilter,
+    options?: CursorWithSkipOptionsWithoutFilter,
   ): Token | null;
 
   /**
@@ -1130,5 +1130,34 @@ export class TokenStore<
       }
     }
     return false;
+  }
+
+  /**
+   * Checks if there is whitespace between two non-overlapping nodes.
+   */
+  public isSpaceBetween(
+    left: Node | Token | Comment,
+    right: Node | Token | Comment,
+  ): boolean {
+    if (left.range[1] >= right.range[0]) {
+      return false;
+    }
+    const { allTokens, tokenStartToIndex } = this[PRIVATE];
+    const startIndex = getFirstIndex(
+      allTokens,
+      tokenStartToIndex,
+      left.range[1],
+    );
+    const endIndex = getLastIndex(allTokens, tokenStartToIndex, right.range[0]);
+
+    let prev: Node | Token | Comment = left;
+    for (let i = startIndex; i <= endIndex && i < allTokens.length; i++) {
+      const token = allTokens[i];
+      if (prev.range[1] < token.range[0]) {
+        return true;
+      }
+      prev = token;
+    }
+    return prev.range[1] < right.range[0];
   }
 }
