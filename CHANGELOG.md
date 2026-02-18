@@ -1,5 +1,11 @@
 # @ota-meshi/ast-token-store
 
+## 0.2.1
+
+### Patch Changes
+
+- [#7](https://github.com/ota-meshi/ast-token-store/pull/7) [`386cbff`](https://github.com/ota-meshi/ast-token-store/commit/386cbffeab002529932c2b1341b65e5f2f652f01) Thanks [@KazariEX](https://github.com/KazariEX)! - chore: move `eslint-plugin-markdown-preferences` to dev dependencies
+
 ## 0.2.0
 
 ### Minor Changes
