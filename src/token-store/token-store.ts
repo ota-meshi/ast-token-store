@@ -288,13 +288,24 @@ export class TokenStore<
     options: CursorWithSkipOptionsWithComment<Token, Comment, R>,
   ): R | null;
 
+  /**
+   * Gets the first token of the given node with complex options.
+   */
+  public getFirstToken<R extends Token | Comment>(
+    node: Node | Token | Comment,
+    options?:
+      | CursorWithSkipOptionsWithoutFilter
+      | CursorWithSkipOptionsWithFilter<Token, R & Token>
+      | CursorWithSkipOptionsWithComment<Token, Comment, R>,
+  ): R | null;
+
   public getFirstToken(
     node: Node | Token | Comment,
     options?:
       | CursorWithSkipOptionsWithoutFilter
       | CursorWithSkipOptionsWithFilter<Token, Token>
       | CursorWithSkipOptionsWithComment<Token, Comment, Token | Comment>,
-  ): SyntaxElement | null {
+  ): Token | Comment | null {
     const { ctx, allTokens, tokenStartToIndex } = this[PRIVATE];
     const { filter, skip } = normalizeSkipOptions(options, ctx);
     const startIndex = getFirstIndex(
@@ -341,6 +352,17 @@ export class TokenStore<
   public getFirstTokens<R extends Token | Comment>(
     node: Node | Token | Comment,
     options: CursorWithCountOptionsWithComment<Token, Comment, R>,
+  ): R[];
+
+  /**
+   * Gets the first tokens of the given node with complex options.
+   */
+  public getFirstTokens<R extends Token | Comment>(
+    node: Node | Token | Comment,
+    options?:
+      | CursorWithCountOptionsWithoutFilter
+      | CursorWithCountOptionsWithFilter<Token, R & Token>
+      | CursorWithCountOptionsWithComment<Token, Comment, R>,
   ): R[];
 
   public getFirstTokens(
@@ -402,6 +424,17 @@ export class TokenStore<
     options: CursorWithSkipOptionsWithComment<Token, Comment, R>,
   ): R | null;
 
+  /**
+   * Gets the last token of the given node with complex options.
+   */
+  public getLastToken<R extends Token | Comment>(
+    node: Node | Token | Comment,
+    options?:
+      | CursorWithSkipOptionsWithoutFilter
+      | CursorWithSkipOptionsWithFilter<Token, R & Token>
+      | CursorWithSkipOptionsWithComment<Token, Comment, R>,
+  ): R | null;
+
   public getLastToken(
     node: Node | Token | Comment,
     options?:
@@ -457,6 +490,17 @@ export class TokenStore<
     options: CursorWithCountOptionsWithComment<Token, Comment, R>,
   ): R[];
 
+  /**
+   * Get the last tokens of the given node with complex options.
+   */
+  public getLastTokens<R extends Token | Comment>(
+    node: Node | Token | Comment,
+    options?:
+      | CursorWithCountOptionsWithoutFilter
+      | CursorWithCountOptionsWithFilter<Token, R & Token>
+      | CursorWithCountOptionsWithComment<Token, Comment, R>,
+  ): R[];
+
   public getLastTokens(
     node: Node | Token | Comment,
     options?:
@@ -509,6 +553,17 @@ export class TokenStore<
   public getTokenAfter<R extends Token | Comment>(
     node: Node | Token | Comment,
     options: CursorWithSkipOptionsWithComment<Token, Comment, R>,
+  ): R | null;
+
+  /**
+   * Gets the token that follows a given node or token with complex options.
+   */
+  public getTokenAfter<R extends Token | Comment>(
+    node: Node | Token | Comment,
+    options?:
+      | CursorWithSkipOptionsWithoutFilter
+      | CursorWithSkipOptionsWithFilter<Token, R & Token>
+      | CursorWithSkipOptionsWithComment<Token, Comment, R>,
   ): R | null;
 
   /**
@@ -568,6 +623,17 @@ export class TokenStore<
     options: CursorWithCountOptionsWithComment<Token, Comment, R>,
   ): R[];
 
+  /**
+   * Gets the `count` tokens that follows a given node or token with complex options.
+   */
+  public getTokensAfter<R extends Token | Comment>(
+    node: Node | Token | Comment,
+    options?:
+      | CursorWithCountOptionsWithoutFilter
+      | CursorWithCountOptionsWithFilter<Token, R & Token>
+      | CursorWithCountOptionsWithComment<Token, Comment, R>,
+  ): R[];
+
   public getTokensAfter(
     node: Node | Token | Comment,
     options?:
@@ -619,6 +685,17 @@ export class TokenStore<
   public getTokenBefore<R extends Token | Comment>(
     node: Node | Token | Comment,
     options: CursorWithSkipOptionsWithComment<Token, Comment, R>,
+  ): R | null;
+
+  /**
+   * Gets the token that precedes a given node or token with complex options.
+   */
+  public getTokenBefore<R extends Token | Comment>(
+    node: Node | Token | Comment,
+    options?:
+      | CursorWithSkipOptionsWithoutFilter
+      | CursorWithSkipOptionsWithFilter<Token, R & Token>
+      | CursorWithSkipOptionsWithComment<Token, Comment, R>,
   ): R | null;
 
   /**
@@ -675,6 +752,17 @@ export class TokenStore<
   ): R[];
 
   /**
+   * Gets the `count` tokens that precedes a given node or token with complex options.
+   */
+  public getTokensBefore<R extends Token | Comment>(
+    node: Node | Token | Comment,
+    options?:
+      | CursorWithCountOptionsWithoutFilter
+      | CursorWithCountOptionsWithFilter<Token, R & Token>
+      | CursorWithCountOptionsWithComment<Token, Comment, R>,
+  ): R[];
+
+  /**
    * Gets the `count` tokens that precedes a given node or token.
    */
   public getTokensBefore(
@@ -727,6 +815,18 @@ export class TokenStore<
     left: Node | Token | Comment,
     right: Node | Token | Comment,
     options: CursorWithSkipOptionsWithComment<Token, Comment, R>,
+  ): R | null;
+
+  /**
+   * Gets the first token between two non-overlapping nodes with complex options.
+   */
+  public getFirstTokenBetween<R extends Token | Comment>(
+    left: Node | Token | Comment,
+    right: Node | Token | Comment,
+    options?:
+      | CursorWithSkipOptionsWithoutFilter
+      | CursorWithSkipOptionsWithFilter<Token, R & Token>
+      | CursorWithSkipOptionsWithComment<Token, Comment, R>,
   ): R | null;
 
   public getFirstTokenBetween(
@@ -788,6 +888,18 @@ export class TokenStore<
     options: CursorWithCountOptionsWithComment<Token, Comment, R>,
   ): R[];
 
+  /**
+   * Gets the first tokens between two non-overlapping nodes with complex options.
+   */
+  public getFirstTokensBetween<R extends Token | Comment>(
+    left: Node | Token | Comment,
+    right: Node | Token | Comment,
+    options?:
+      | CursorWithCountOptionsWithoutFilter
+      | CursorWithCountOptionsWithFilter<Token, R & Token>
+      | CursorWithCountOptionsWithComment<Token, Comment, R>,
+  ): R[];
+
   public getFirstTokensBetween(
     left: Node | Token | Comment,
     right: Node | Token | Comment,
@@ -844,6 +956,18 @@ export class TokenStore<
     left: Node | Token | Comment,
     right: Node | Token | Comment,
     options: CursorWithSkipOptionsWithComment<Token, Comment, R>,
+  ): R | null;
+
+  /**
+   * Gets the last token between two non-overlapping nodes with complex options.
+   */
+  public getLastTokenBetween<R extends Token | Comment>(
+    left: Node | Token | Comment,
+    right: Node | Token | Comment,
+    options?:
+      | CursorWithSkipOptionsWithoutFilter
+      | CursorWithSkipOptionsWithFilter<Token, R & Token>
+      | CursorWithSkipOptionsWithComment<Token, Comment, R>,
   ): R | null;
 
   public getLastTokenBetween(
@@ -905,6 +1029,18 @@ export class TokenStore<
     options: CursorWithCountOptionsWithComment<Token, Comment, R>,
   ): R[];
 
+  /**
+   * Gets the last tokens between two non-overlapping nodes with complex options.
+   */
+  public getLastTokensBetween<R extends Token | Comment>(
+    left: Node | Token | Comment,
+    right: Node | Token | Comment,
+    options?:
+      | CursorWithCountOptionsWithoutFilter
+      | CursorWithCountOptionsWithFilter<Token, R & Token>
+      | CursorWithCountOptionsWithComment<Token, Comment, R>,
+  ): R[];
+
   public getLastTokensBetween(
     left: Node | Token | Comment,
     right: Node | Token | Comment,
@@ -958,6 +1094,17 @@ export class TokenStore<
   public getTokens<R extends Token | Comment>(
     node: Node | Token | Comment,
     options: CursorWithCountOptionsWithComment<Token, Comment, R>,
+  ): R[];
+
+  /**
+   * Gets all tokens that are related to the given node with complex options.
+   */
+  public getTokens<R extends Token | Comment>(
+    node: Node | Token | Comment,
+    options?:
+      | CursorWithCountOptionsWithoutFilter
+      | CursorWithCountOptionsWithFilter<Token, R & Token>
+      | CursorWithCountOptionsWithComment<Token, Comment, R>,
   ): R[];
 
   /**
@@ -1018,6 +1165,18 @@ export class TokenStore<
     left: Node | Token | Comment,
     right: Node | Token | Comment,
     options: CursorWithCountOptionsWithComment<Token, Comment, R>,
+  ): R[];
+
+  /**
+   * Gets all of the tokens between two non-overlapping nodes with complex options.
+   */
+  public getTokensBetween<R extends Token | Comment>(
+    left: Node | Token | Comment,
+    right: Node | Token | Comment,
+    paddingOrOptions?:
+      | CursorWithCountOptionsWithoutFilter
+      | CursorWithCountOptionsWithFilter<Token, R & Token>
+      | CursorWithCountOptionsWithComment<Token, Comment, R>,
   ): R[];
 
   /**
