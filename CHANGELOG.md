@@ -1,5 +1,11 @@
 # @ota-meshi/ast-token-store
 
+## 0.2.2
+
+### Patch Changes
+
+- [#10](https://github.com/ota-meshi/ast-token-store/pull/10) [`63ea8e6`](https://github.com/ota-meshi/ast-token-store/commit/63ea8e6a5f00e3a5fa5c473a78553e81ab6538c0) Thanks [@SukkaW](https://github.com/SukkaW)! - Remove `@eslint/markdown` from the peer deps.
+
 ## 0.2.1
 
 ### Patch Changes
