@@ -1,5 +1,11 @@
 # @ota-meshi/ast-token-store
 
+## 0.2.3
+
+### Patch Changes
+
+- [#12](https://github.com/ota-meshi/ast-token-store/pull/12) [`a2d3d0a`](https://github.com/ota-meshi/ast-token-store/commit/a2d3d0a92da9ef54675f47a10179acfe61fff7e5) Thanks [@ota-meshi](https://github.com/ota-meshi)! - fix: remove eslint from peer dependencies
+
 ## 0.2.2
 
 ### Patch Changes
