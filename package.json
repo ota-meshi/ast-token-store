@@ -50,7 +50,6 @@
   },
   "homepage": "https://github.com/ota-meshi/ast-token-store/",
   "peerDependencies": {
-    "@eslint/markdown": "^7.4.0",
     "eslint": ">=9.0.0"
   },
   "devDependencies": {
