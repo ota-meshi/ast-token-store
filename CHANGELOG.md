@@ -1,5 +1,11 @@
 # @ota-meshi/ast-token-store
 
+## 0.3.0
+
+### Minor Changes
+
+- [#14](https://github.com/ota-meshi/ast-token-store/pull/14) [`b898b7f`](https://github.com/ota-meshi/ast-token-store/commit/b898b7fbe01ccbf890b841ff4e516e49a5af7174) Thanks [@ota-meshi](https://github.com/ota-meshi)! - Add overloads to various `TokenStore` methods to improve TypeScript ergonomics.
+
 ## 0.2.3
 
 ### Patch Changes
