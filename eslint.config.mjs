@@ -74,6 +74,18 @@ export default defineConfig([
     },
   },
   {
+    files: ["**/*.{js,ts,mjc,mts,cjs,cts}"],
+    rules: {
+      "n/prefer-node-protocol": "error",
+      "n/file-extension-in-import": ["error", "always"],
+    },
+    settings: {
+      n: {
+        typescriptExtensionMap: [],
+      },
+    },
+  },
+  {
     files: ["**/*.md", "*.md"].flatMap((pattern) => [
       `${pattern}/*.js`,
       `${pattern}/*.mjs`,
