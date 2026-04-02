@@ -77,7 +77,7 @@
     "eslint-plugin-jsonc": "^3.0.0",
     "eslint-plugin-markdown": "^5.1.0",
     "eslint-plugin-markdown-links": "^0.8.0",
-    "eslint-plugin-markdown-preferences": "^0.40.2",
+    "eslint-plugin-markdown-preferences": "^0.41.0",
     "eslint-plugin-n": "^17.16.2",
     "eslint-plugin-node-dependencies": "^2.0.0",
     "eslint-plugin-prettier": "^5.2.3",
