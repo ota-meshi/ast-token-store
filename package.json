@@ -54,7 +54,7 @@
     "@changesets/cli": "^3.0.0",
     "@eslint/core": "^1.0.0",
     "@eslint/markdown": "^8.0.0",
-    "@ota-meshi/eslint-plugin": "^0.20.0",
+    "@ota-meshi/eslint-plugin": "^0.21.0",
     "@shikijs/vitepress-twoslash": "^4.0.0",
     "@types/eslint": "^9.6.1",
     "@types/eslint-scope": "^9.0.0",
